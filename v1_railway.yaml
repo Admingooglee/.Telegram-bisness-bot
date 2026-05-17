@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./apps/api
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envFrom:
+      - .env
+    healthChecks:
+      - path: /api/v1/health
+        timeout: 30s
+        interval: 10s
+        retries: 5
+
+  bot:
+    build: ./apps/bot
+    startCommand: python -m app.main
+    envFrom:
+      - .env
+
+  miniapp:
+    build: ./apps/miniapp
+    startCommand: npm run start
+    envFrom:
+      - .env
+
+plugins:
+  - source: registry.railway.app/railway/postgresql
+    id: postgres
+  - source: registry.railway.app/railway/redis
+    id: redis
